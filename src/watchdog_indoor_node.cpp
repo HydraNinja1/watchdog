@@ -14,6 +14,7 @@
 #include <rclcpp/rclcpp.hpp>
 #include <std_msgs/msg/bool.hpp>
 #include <nav_msgs/msg/odometry.hpp>
+#include <geometry_msgs/msg/pose_with_covariance_stamped.hpp>
 #include <geometry_msgs/msg/pose_stamped.hpp>
 #include <px4_msgs/msg/vehicle_odometry.hpp>
 
@@ -22,6 +23,7 @@ using namespace std::chrono_literals;
 
 using std_msgs::msg::Bool;
 using nav_msgs::msg::Odometry;
+using geometry_msgs::msg::PoseWithCovarianceStamped;
 using geometry_msgs::msg::PoseStamped;
 using px4_msgs::msg::VehicleOdometry;
 
@@ -60,8 +62,8 @@ public:
         // Defining topic names as parameters
         mocap_topic_ = this->declare_parameter<std::string>("mocap_topic", "/vrpn_mocap/" + asset_name_ + "/pose");
         mocap_debug_topic_ = this->declare_parameter<std::string>("mocap_debug_topic", "/vrpn_mocap/out/debug");
-        odometry_topic_ = this->declare_parameter<std::string>("odometry_topic", "/dlio/odom_node/odom");
-        odometry_debug_topic_ = this->declare_parameter<std::string>("odometry_debug_topic", "/dlio/odom_node/odom_debug");
+        odometry_topic_ = this->declare_parameter<std::string>("odometry_topic", "/vio/pose");
+        odometry_debug_topic_ = this->declare_parameter<std::string>("odometry_debug_topic", "/vio/pose_debug");
         fmu_in_topic_ = this->declare_parameter<std::string>("fmu_in_topic", "/fmu/in/vehicle_visual_odometry");
         watchdog_status_topic_ = this->declare_parameter<std::string>("watchdog_status_topic", "/watchdog/status");
 
@@ -71,7 +73,7 @@ public:
 
         // Subscribers
         mocap_sub_ = this->create_subscription<PoseStamped>(mocap_topic_, qos, std::bind(&Watchdog::mocap_callback, this, _1));
-        odometry_sub_ = this->create_subscription<Odometry>(odometry_topic_, qos, std::bind(&Watchdog::odom_callback, this, _1));
+        odometry_sub_ = this->create_subscription<PoseWithCovarianceStamped>(odometry_topic_, qos, std::bind(&Watchdog::odom_callback, this, _1));
 
         // Publishers
         mocap_debug_pub_ = this->create_publisher<VehicleOdometry>(mocap_debug_topic_, qos);
@@ -152,7 +154,7 @@ private:
         }
     }
 
-    void odom_callback(const Odometry::SharedPtr msg) {
+    void odom_callback(const PoseWithCovarianceStamped::SharedPtr msg) {
         Pose p;
         p.t = msg->header.stamp.sec + msg->header.stamp.nanosec * 1e-9;
         p.position = Eigen::Vector3f(
@@ -646,7 +648,7 @@ private:
 
     // Subscribers
     rclcpp::Subscription<PoseStamped>::SharedPtr mocap_sub_;
-    rclcpp::Subscription<Odometry>::SharedPtr odometry_sub_;
+    rclcpp::Subscription<PoseWithCovarianceStamped>::SharedPtr odometry_sub_;
 
     // Publishers
     rclcpp::Publisher<VehicleOdometry>::SharedPtr mocap_debug_pub_;
