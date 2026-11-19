@@ -37,20 +37,20 @@ class Watchdog : public rclcpp::Node {
 public:
     Watchdog() : Node("watchdog_indoor_node") {       
         // Check parameters for switching between MoCap and odometry
-        min_x_ = this->declare_parameter<double>("min_x", -10.0);
-        max_x_ = this->declare_parameter<double>("max_x", 10.0);
+        min_x_ = this->declare_parameter<double>("min_x", -1.0);
+        max_x_ = this->declare_parameter<double>("max_x", 8.0);
 
-        min_y_ = this->declare_parameter<double>("min_y", -10.0);
-        max_y_ = this->declare_parameter<double>("max_y", 10.0);
-        xy_limit_count_ = this->declare_parameter<int>("xy_limit_count", 5);
+        min_y_ = this->declare_parameter<double>("min_y", -2.0);
+        max_y_ = this->declare_parameter<double>("max_y", 4.0);
+        xy_limit_count_ = this->declare_parameter<int>("xy_limit_count", 10);
 
-        max_z_ = this->declare_parameter<double>("max_z", 5.0);
-        z_limit_count_ = this->declare_parameter<int>("z_limit_count", 5);
+        max_z_ = this->declare_parameter<double>("max_z", 2.0);
+        z_limit_count_ = this->declare_parameter<int>("z_limit_count", 10);
 
-        max_v_ = this->declare_parameter<double>("max_v", 5.0);
-        max_delta_v_ = this->declare_parameter<double>("max_delta_v", 5.0);
+        max_v_ = this->declare_parameter<double>("max_v", 2.0);
+        max_delta_v_ = this->declare_parameter<double>("max_delta_v", 2.0);
 
-        timeout_sec_ = this->declare_parameter<double>("timeout_sec", 0.2);
+        timeout_sec_ = this->declare_parameter<double>("timeout_sec", 0.5);
         min_init_samples_ = this->declare_parameter<int>("min_init_samples", 10);
 
         max_stamp_age_sec_ = this->declare_parameter<double>("max_stamp_age_sec", 0.5);
@@ -86,7 +86,6 @@ public:
             
         // Watchdog timer
         watchdog_timer_ = this->create_wall_timer(20ms, [this]() {
-
             if (initialised) {
                 watchdog_checks();
             } else if (init_window_started_) {
