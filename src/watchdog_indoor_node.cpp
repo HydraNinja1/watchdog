@@ -643,8 +643,8 @@ private:
         }
 
         msg.reset_counter = reset_counter_;
-        fmu_in_pub_->publish(msg);
-        last_fmu_timestamp_sample_ = msg.timestamp_sample;
+        // fmu_in_pub_->publish(msg);
+        // last_fmu_timestamp_sample_ = msg.timestamp_sample;
     }
 
     // Topic names
