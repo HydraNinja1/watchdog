@@ -365,11 +365,22 @@ private:
 
                 if (!std::isfinite(speed) || speed > max_v_) {
                     std::ostringstream reason;
+
                     reason << "Velocity exceeded limit ("
                         << speed << " m/s > "
-                        << max_v_ << " m/s)";
+                        << max_v_ << " m/s)"
+                        << "\nTime difference: " << dt * 1000.0 << " ms"
+                        << "\nPosition difference: "
+                        << (position - previous_odom_position_).norm() << " m"
+                        << "\nPrevious position: ["
+                        << previous_odom_position_.transpose() << "]"
+                        << "\nCurrent position: ["
+                        << position.transpose() << "]"
+                        << "\nVelocity vector: ["
+                        << velocity.transpose() << "] m/s";
 
                     fail(reason.str().c_str());
+
                     return true;
                 }
 
