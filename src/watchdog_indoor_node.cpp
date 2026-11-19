@@ -158,14 +158,14 @@ private:
         p.t = msg->header.stamp.sec + msg->header.stamp.nanosec * 1e-9;
         p.position = Eigen::Vector3f(
             msg->pose.pose.position.x,
-            msg->pose.pose.position.y,
-            msg->pose.pose.position.z
+            -msg->pose.pose.position.y,
+            -msg->pose.pose.position.z
         );
         p.orientation = Eigen::Quaternionf(
             msg->pose.pose.orientation.w,
             msg->pose.pose.orientation.x,
-            msg->pose.pose.orientation.y,
-            msg->pose.pose.orientation.z
+            -msg->pose.pose.orientation.y,
+            -msg->pose.pose.orientation.z
         );
 
         // Perform watchdog checks
